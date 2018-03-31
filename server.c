@@ -6,6 +6,8 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <time.h>
+
 #define PORT 8080
 
 int command(char* string){
@@ -26,11 +28,13 @@ int main(int argc, char const *argv[])
 {
     int server_fd, new_socket, valread;
     struct sockaddr_in address;
+    struct tm *hour;
+    time_t now;
     int opt = 1;
     int addrlen = sizeof(address);
     char buffer[1024] = {0};
     char resp[1024];
-      
+ 
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
@@ -60,7 +64,7 @@ int main(int argc, char const *argv[])
         perror("listen");
         exit(EXIT_FAILURE);
     }
-    do{ 
+    do{
       memset(buffer, 0, 1024);
       if ((new_socket = accept(server_fd, (struct sockaddr *)&address, 
               (socklen_t*)&addrlen))<0)
@@ -71,7 +75,23 @@ int main(int argc, char const *argv[])
       valread = read(new_socket , buffer, 1024);
       switch(command(buffer)){
         case 0:
-          strcpy(resp,"pong");
+          now = time(NULL);
+          hour = localtime(&now);
+          strcpy(resp, "Rrtt: ");
+
+          char hourHH[3];
+          sprintf(hourHH, "%d", hour->tm_hour);    
+          strcat(resp, hourHH);
+          strcat(resp, ":");
+          
+          char hourMM[3];
+          sprintf(hourMM, "%d", hour->tm_min);    
+          strcat(resp, hourMM);
+          strcat(resp, ":");
+
+          char hourSS[3];
+          sprintf(hourSS, "%d", hour->tm_sec);    
+          strcat(resp, hourSS);
           break;
         case 1:
           strcpy(resp, "dns ");
