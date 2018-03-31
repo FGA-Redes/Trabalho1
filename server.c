@@ -74,23 +74,24 @@ int main(int argc, char const *argv[])
       }
       valread = read(new_socket , buffer, 1024);
       switch(command(buffer)){
+        // If the command is rtt
         case 0:
           now = time(NULL);
           hour = localtime(&now);
           strcpy(resp, "Rrtt: ");
 
           char hourHH[3];
-          sprintf(hourHH, "%d", hour->tm_hour);    
+          sprintf(hourHH, "%02d", hour->tm_hour);    
           strcat(resp, hourHH);
           strcat(resp, ":");
           
           char hourMM[3];
-          sprintf(hourMM, "%d", hour->tm_min);    
+          sprintf(hourMM, "%02d", hour->tm_min);    
           strcat(resp, hourMM);
           strcat(resp, ":");
 
           char hourSS[3];
-          sprintf(hourSS, "%d", hour->tm_sec);    
+          sprintf(hourSS, "%02d", hour->tm_sec);    
           strcat(resp, hourSS);
           break;
         case 1:
@@ -101,6 +102,7 @@ int main(int argc, char const *argv[])
           strcpy(resp, "Comando inválido");
           break;
       }
+      sleep(2);
 //      printf("%s\n",buffer );
       send(new_socket , resp , strlen(resp) , 0 );
 //      printf("Hello message sent\n");

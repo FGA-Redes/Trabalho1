@@ -6,6 +6,7 @@
 #include <string.h>
 #include <unistd.h>
 #include <arpa/inet.h>
+#include <time.h>
 
 #define PORT 8080
   
@@ -17,6 +18,7 @@ int main(int argc, char const *argv[])
     char msg[1024];
     char buffer[1024] = {0};
     int count = 0;
+    struct timespec time_send, time_receive;
 
     strcpy(msg, argv[2]);
     for(i = 3; i < argc; i++){
@@ -48,16 +50,33 @@ int main(int argc, char const *argv[])
         printf("\nConnection Failed \n");
         return -1;
       }
+      
+      //Get current time in send request
+      timespec_get(&time_send, TIME_UTC);
+
+      //Send Request
       printf("send request\n");
       send(sock , msg , strlen(msg) , 0 );
-      if(msg[0] == 'r' && msg[1] == 't' && msg[1] == 't'){
-        count++;
-      } else {
-        count = 11;
-      }
+
+      //Waiting response from server
       printf("Wait from server\n");
       valread = read( sock , buffer, 1024);
-      printf("%s\n",buffer );
+
+      //Get current time to receive msg
+      timespec_get(&time_receive, TIME_UTC);
+
+      // Diferent print for command
+      if(msg[0] == 'r' && msg[1] == 't' && msg[1] == 't'){
+        count++;
+        printf("%s -- time: %dns\n",buffer, time_receive.tv_nsec - time_send.tv_nsec);
+      } else {
+        count = 11;
+        if(msg[0] == 'r' && msg[1] == 't' && msg[2] == 't'){
+          printf("dns\n");
+        } else {
+          printf("%s\n", buffer);
+        }        
+      }
     }while(count <= 10);
     return 0;
 }
