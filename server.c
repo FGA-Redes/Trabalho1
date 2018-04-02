@@ -34,25 +34,21 @@ int main(int argc, char const *argv[])
     int addrlen = sizeof(address);
     char buffer[1024] = {0};
     char resp[1024];
- 
+
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
     {
         perror("socket failed");
         exit(EXIT_FAILURE);
     }
-      
+
     // Forcefully attaching socket to the port 8080
-    if (setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
-                                                  &opt, sizeof(opt)))
-    {
-        perror("setsockopt");
-        exit(EXIT_FAILURE);
-    }
+    setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR | SO_REUSEPORT,
+                                                  &opt, sizeof(opt));
     address.sin_family = AF_INET;
     address.sin_addr.s_addr = INADDR_ANY;
     address.sin_port = htons( PORT );
-      
+
     // Forcefully attaching socket to the port 8080
     if (bind(server_fd, (struct sockaddr *)&address, sizeof(address)) < 0)
     {
@@ -66,7 +62,7 @@ int main(int argc, char const *argv[])
     }
     do{
       memset(buffer, 0, 1024);
-      if ((new_socket = accept(server_fd, (struct sockaddr *)&address, 
+      if ((new_socket = accept(server_fd, (struct sockaddr *)&address,
               (socklen_t*)&addrlen))<0)
       {
         perror("accept");
@@ -81,17 +77,17 @@ int main(int argc, char const *argv[])
           strcpy(resp, "Rrtt: ");
 
           char hourHH[3];
-          sprintf(hourHH, "%02d", hour->tm_hour);    
+          sprintf(hourHH, "%02d", hour->tm_hour);
           strcat(resp, hourHH);
           strcat(resp, ":");
-          
+
           char hourMM[3];
-          sprintf(hourMM, "%02d", hour->tm_min);    
+          sprintf(hourMM, "%02d", hour->tm_min);
           strcat(resp, hourMM);
           strcat(resp, ":");
 
           char hourSS[3];
-          sprintf(hourSS, "%02d", hour->tm_sec);    
+          sprintf(hourSS, "%02d", hour->tm_sec);
           strcat(resp, hourSS);
           break;
         case 1:

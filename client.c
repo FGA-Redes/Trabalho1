@@ -9,7 +9,7 @@
 #include <time.h>
 
 #define PORT 8080
-  
+
 int main(int argc, char const *argv[])
 {
     struct sockaddr_in address;
@@ -39,7 +39,7 @@ int main(int argc, char const *argv[])
       serv_addr.sin_port = htons(PORT);
 
       // Convert IPv4 and IPv6 addresses from text to binary form
-      if(inet_pton(AF_INET, argv[1], &serv_addr.sin_addr) <= 0) 
+      if(inet_pton(AF_INET, argv[1], &serv_addr.sin_addr) <= 0)
       {
         printf("\nInvalid address/ Address not supported \n");
         return -1;
@@ -50,9 +50,11 @@ int main(int argc, char const *argv[])
         printf("\nConnection Failed \n");
         return -1;
       }
-      
+
       //Get current time in send request
-      timespec_get(&time_send, TIME_UTC);
+      #ifdef TIME_UTC
+         timespec_get(&time_send, TIME_UTC);
+      #endif
 
       //Send Request
       printf("send request\n");
@@ -63,7 +65,10 @@ int main(int argc, char const *argv[])
       valread = read( sock , buffer, 1024);
 
       //Get current time to receive msg
-      timespec_get(&time_receive, TIME_UTC);
+      #ifdef TIME_UTC
+         timespec_get(&time_receive, TIME_UTC);
+      #endif
+
 
       // Diferent print for command
       if(msg[0] == 'r' && msg[1] == 't' && msg[1] == 't'){
@@ -75,9 +80,8 @@ int main(int argc, char const *argv[])
           printf("dns\n");
         } else {
           printf("%s\n", buffer);
-        }        
+        }
       }
     }while(count <= 10);
     return 0;
 }
-
