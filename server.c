@@ -7,6 +7,7 @@
 #include <unistd.h>
 #include <arpa/inet.h>
 #include <time.h>
+#include <netdb.h>
 
 #define PORT 8080
 
@@ -34,6 +35,10 @@ int main(int argc, char const *argv[])
     int addrlen = sizeof(address);
     char buffer[1024] = {0};
     char resp[1024];
+    struct addrinfo* res;
+    char* hostname;
+    char* hostaddr;
+    struct sockaddr_in* saddr;
 
     // Creating socket file descriptor
     if ((server_fd = socket(AF_INET, SOCK_STREAM, 0)) == 0)
@@ -91,8 +96,18 @@ int main(int argc, char const *argv[])
           strcat(resp, hourSS);
           break;
         case 1:
-          strcpy(resp, "dns ");
-          strcpy(resp, buffer);
+          if (0 != getaddrinfo(hostname, NULL, NULL, &res)) {
+            fprintf(stderr, "Error in resolving hostname %s\n", hostname);
+          }
+
+          hostname = argv[3];
+          saddr = (struct sockaddr_in*)res->ai_addr;
+          hostaddr = inet_ntoa(saddr->sin_addr);
+
+          strcat(resp, saddr);
+          //
+          // strcpy(resp, "dns ");
+          // strcpy(resp, buffer);
           break;
         default:
           strcpy(resp, "Comando inválido");
