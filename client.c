@@ -65,9 +65,7 @@ int main(int argc, char const *argv[])
       valread = read( sock , buffer, 1024);
 
       //Get current time to receive msg
-      #ifdef TIME_UTC
-         timespec_get(&time_receive, TIME_UTC);
-      #endif
+      timespec_get(&time_receive, TIME_UTC);
 
 
       // Diferent print for command

@@ -96,27 +96,22 @@ int main(int argc, char const *argv[])
           strcat(resp, hourSS);
           break;
         case 1:
+          hostname = &buffer[4];
           if (0 != getaddrinfo(hostname, NULL, NULL, &res)) {
             fprintf(stderr, "Error in resolving hostname %s\n", hostname);
           }
 
-          hostname = argv[3];
           saddr = (struct sockaddr_in*)res->ai_addr;
           hostaddr = inet_ntoa(saddr->sin_addr);
 
-          strcat(resp, saddr);
-          //
-          // strcpy(resp, "dns ");
-          // strcpy(resp, buffer);
+          strcpy(resp, "dns ");
+          strcat(resp, hostaddr);
           break;
         default:
           strcpy(resp, "Comando inválido");
           break;
       }
-      sleep(2);
-//      printf("%s\n",buffer );
       send(new_socket , resp , strlen(resp) , 0 );
-//      printf("Hello message sent\n");
     } while(1);
     return 0;
 }
